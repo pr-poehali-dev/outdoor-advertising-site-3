@@ -83,20 +83,17 @@ const CALC_PRODUCTS = [
 const CALC_MATERIALS: Record<string, { label: string; mult: number }[]> = {
   "Объёмные буквы": [
     { label: "Акрил", mult: 1.0 },
-    { label: "Пластик ABS", mult: 0.8 },
     { label: "Нержавейка", mult: 1.6 },
     { label: "Алюминий", mult: 1.4 },
   ],
   "Плоские буквы": [
     { label: "Акрил", mult: 1.0 },
-    { label: "Пластик ABS", mult: 0.75 },
     { label: "Нержавейка", mult: 1.5 },
     { label: "Дерево", mult: 0.9 },
   ],
   "Баннер": [
     { label: "Банерная ткань", mult: 1.0 },
     { label: "Сетка (wind)", mult: 0.9 },
-    { label: "Плёнка (глянец)", mult: 1.2 },
   ],
   "Световой короб": [
     { label: "Акрил + LED", mult: 1.0 },
@@ -113,21 +110,21 @@ const CALC_MATERIALS: Record<string, { label: string; mult: number }[]> = {
     { label: "Пластик", mult: 0.7 },
   ],
   "Гибкий неон": [
+    { label: "LED-неон 6мм", mult: 0.8 },
     { label: "LED-неон 12мм", mult: 1.0 },
     { label: "LED-неон 20мм", mult: 1.3 },
   ],
   "3D-печать": [
     { label: "PLA-пластик", mult: 1.0 },
     { label: "ABS-пластик", mult: 1.1 },
-    { label: "Фотополимер", mult: 1.8 },
+    { label: "Печать по фото", mult: 1.5 },
   ],
 };
 
 const CALC_EXTRAS = [
   { label: "Монтаж", price: 3500 },
-  { label: "Доставка", price: 1500 },
+  { label: "Доставка", price: 500 },
   { label: "Услуги дизайнера", price: 3000 },
-  { label: "Покрытие UV-лак", price: 2000 },
   { label: "Подсветка LED", price: 4000 },
 ];
 
