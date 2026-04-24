@@ -116,6 +116,10 @@ export default function Index() {
   const [calcHeight, setCalcHeight] = useState(50);
   const [calcQty, setCalcQty] = useState(1);
   const [calcExtras, setCalcExtras] = useState<number[]>([]);
+  const [formName, setFormName] = useState("");
+  const [formPhone, setFormPhone] = useState("");
+  const [formMessage, setFormMessage] = useState("");
+  const [formStatus, setFormStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -165,6 +169,26 @@ export default function Index() {
     Math.round(n).toLocaleString("ru-RU") + " ₽";
 
   const isVisible = (id: string) => visibleSections.has(id);
+
+  const handleSubmit = async () => {
+    if (!formName || !formPhone) return;
+    setFormStatus("sending");
+    try {
+      const res = await fetch("https://functions.poehali.dev/0c81d1f3-1238-4e09-87ed-33e894d28efe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: formName, phone: formPhone, message: formMessage }),
+      });
+      if (res.ok) {
+        setFormStatus("ok");
+        setFormName(""); setFormPhone(""); setFormMessage("");
+      } else {
+        setFormStatus("error");
+      }
+    } catch {
+      setFormStatus("error");
+    }
+  };
 
   return (
     <div className="min-h-screen" style={{ background: "var(--dark-bg)", color: "white" }}>
@@ -667,13 +691,13 @@ export default function Index() {
               <p className="text-sm tracking-widest mb-4" style={{ color: "var(--neon-blue)", fontFamily: "Oswald, sans-serif" }}>КТО МЫ</p>
               <h2 className="section-title text-5xl mb-8">О <span className="gradient-text">НАС</span></h2>
               <p className="text-lg mb-6" style={{ color: "#888", lineHeight: 1.8 }}>
-                ADVERT — команда профессионалов, которая превращает рекламные бюджеты в реальный охват и узнаваемость бренда. Мы работаем с 2017 года и управляем более чем 250 рекламными конструкциями по всему городу.
+                Вас приветствует команда <span style={{ color: "var(--neon-yellow)" }}>Визуал ПРО!</span> Мы готовы гарантировать: лояльные цены, индивидуальный подход, высокое качество и соблюдение сроков.
               </p>
               <p className="text-lg mb-10" style={{ color: "#888", lineHeight: 1.8 }}>
-                Наш подход — прозрачные цены, честная аналитика и результат, который можно измерить. Никаких скрытых платежей и сюрпризов после запуска.
+                Если Вам нужна <span style={{ color: "var(--neon-yellow)" }}>яркая</span> наружная реклама — мы будем рады видеть Вас в числе наших клиентов! Лучшие материалы, качественная сборка, эксклюзивный дизайн.
               </p>
               <div className="flex flex-wrap gap-4">
-                {["Прозрачные цены", "Гарантия размещения", "Аналитика охвата", "Личный менеджер"].map((tag, i) => (
+                {["Лояльные цены", "Индивидуальный подход", "Высокое качество", "Соблюдение сроков"].map((tag, i) => (
                   <span key={i} className="px-4 py-2 rounded-full text-sm" style={{ border: "1px solid #333", color: "#aaa" }}>
                     {tag}
                   </span>
@@ -690,10 +714,8 @@ export default function Index() {
               }}
             >
               {[
-                { icon: "Shield", title: "7 лет опыта", desc: "На рынке наружной рекламы" },
+                { icon: "Shield", title: "10 лет опыта", desc: "На рынке наружной рекламы" },
                 { icon: "Star", title: "Рейтинг 4.9", desc: "По отзывам клиентов" },
-                { icon: "Users", title: "50 человек", desc: "В нашей команде" },
-                { icon: "Award", title: "12 наград", desc: "Индустриальные премии" },
               ].map((item, i) => (
                 <div key={i} className="rounded-xl p-6" style={{ background: "#111", border: "1px solid #222" }}>
                   <Icon name={item.icon} fallback="Star" size={28} style={{ color: "var(--neon-yellow)", marginBottom: 12 }} />
@@ -717,25 +739,42 @@ export default function Index() {
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-xs tracking-widest mb-2" style={{ color: "#666", fontFamily: "Oswald, sans-serif" }}>ИМЯ</label>
-                <input type="text" placeholder="Иван Петров" className="input-neon w-full px-4 py-3 rounded-lg text-sm" />
+                <input type="text" placeholder="Иван Петров" value={formName} onChange={(e) => setFormName(e.target.value)} className="input-neon w-full px-4 py-3 rounded-lg text-sm" />
               </div>
               <div>
                 <label className="block text-xs tracking-widest mb-2" style={{ color: "#666", fontFamily: "Oswald, sans-serif" }}>ТЕЛЕФОН</label>
-                <input type="tel" placeholder="+7 (900) 000-00-00" className="input-neon w-full px-4 py-3 rounded-lg text-sm" />
+                <input type="tel" placeholder="+7 (900) 000-00-00" value={formPhone} onChange={(e) => setFormPhone(e.target.value)} className="input-neon w-full px-4 py-3 rounded-lg text-sm" />
               </div>
             </div>
             <div className="mb-6">
               <label className="block text-xs tracking-widest mb-2" style={{ color: "#666", fontFamily: "Oswald, sans-serif" }}>ЧТО НУЖНО</label>
-              <textarea rows={4} placeholder="Расскажите о вашем проекте — тип рекламы, бюджет, сроки..." className="input-neon w-full px-4 py-3 rounded-lg text-sm resize-none" />
+              <textarea rows={4} placeholder="Расскажите о вашем проекте — тип изделия, размеры, сроки..." value={formMessage} onChange={(e) => setFormMessage(e.target.value)} className="input-neon w-full px-4 py-3 rounded-lg text-sm resize-none" />
             </div>
-            <button className="neon-btn w-full py-4 rounded-lg text-base">Отправить заявку</button>
+            {formStatus === "ok" && (
+              <div className="mb-4 px-4 py-3 rounded-lg text-sm text-center" style={{ background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", color: "#4ade80" }}>
+                ✅ Заявка отправлена! Мы свяжемся с вами в ближайшее время.
+              </div>
+            )}
+            {formStatus === "error" && (
+              <div className="mb-4 px-4 py-3 rounded-lg text-sm text-center" style={{ background: "rgba(255,50,50,0.1)", border: "1px solid rgba(255,50,50,0.3)", color: "#f87171" }}>
+                ❌ Ошибка отправки. Позвоните нам: +7 (921) 618-98-86
+              </div>
+            )}
+            <button
+              onClick={handleSubmit}
+              disabled={formStatus === "sending" || !formName || !formPhone}
+              className="neon-btn w-full py-4 rounded-lg text-base"
+              style={{ opacity: (!formName || !formPhone) ? 0.5 : 1, cursor: (!formName || !formPhone) ? "not-allowed" : "pointer" }}
+            >
+              {formStatus === "sending" ? "Отправляем..." : "Отправить заявку"}
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             {[
-              { icon: "Phone", label: "ТЕЛЕФОН", value: "+7 (800) 123-45-67" },
-              { icon: "Mail", label: "EMAIL", value: "hello@advert.ru" },
-              { icon: "MapPin", label: "АДРЕС", value: "ул. Ленина, 1, офис 405" },
+              { icon: "Phone", label: "ТЕЛЕФОН", value: "+7 (921) 618-98-86" },
+              { icon: "Mail", label: "EMAIL", value: "vizualpro39@mail.ru" },
+              { icon: "MapPin", label: "АДРЕС", value: "г. Калининград, Киевский переулок, д. 1А" },
             ].map((item, i) => (
               <div key={i} className="text-center">
                 <Icon name={item.icon} fallback="Phone" size={20} className="mx-auto mb-2" style={{ color: "var(--neon-yellow)" }} />
