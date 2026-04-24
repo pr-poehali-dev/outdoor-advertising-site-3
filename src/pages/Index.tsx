@@ -143,7 +143,7 @@ export default function Index() {
               className="text-2xl font-bold tracking-wider"
               style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)" }}
             >
-              ADVERT
+              Визуал
             </span>
             <span
               className="text-xs px-2 py-0.5 rounded"
@@ -154,7 +154,7 @@ export default function Index() {
                 letterSpacing: "0.1em",
               }}
             >
-              PRO
+              ПРО
             </span>
           </a>
 
@@ -616,8 +616,8 @@ export default function Index() {
       {/* FOOTER */}
       <footer className="py-8 text-center text-sm border-t" style={{ borderColor: "#1a1a1a", color: "#444" }}>
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <span style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)", fontSize: "1.1rem" }}>ADVERT</span>
-          <span>© 2024 Рекламное агентство ADVERT. Все права защищены.</span>
+          <span style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)", fontSize: "1.1rem" }}>Визуал ПРО</span>
+          <span>© 2024 Рекламное агентство Визуал ПРО. Все права защищены.</span>
           <div className="flex gap-6">
             {["ВКонтакте", "Telegram", "WhatsApp"].map((s) => (
               <a key={s} href="#contacts" className="text-xs transition-colors duration-200 hover:text-white" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "0.08em" }}>
