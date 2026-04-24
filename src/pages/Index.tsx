@@ -25,36 +25,15 @@ const SERVICES = [
 ];
 
 const PRICE_TABLE = [
-  {
-    type: "Билборд 6×3",
-    locations: ["Центр", "Спальный район", "Трасса"],
-    prices: [45000, 25000, 18000],
-    period: "/ мес",
-  },
-  {
-    type: "Ситилайт",
-    locations: ["Центр", "Торговая зона", "Метро"],
-    prices: [22000, 15000, 18000],
-    period: "/ мес",
-  },
-  {
-    type: "Цифровой экран",
-    locations: ["Пакет 100 выходов", "Пакет 300 выходов", "Пакет 500 выходов"],
-    prices: [12000, 30000, 45000],
-    period: "",
-  },
-  {
-    type: "Брандмауэр",
-    locations: ["до 100 м²", "100–300 м²", "от 300 м²"],
-    prices: [80000, 180000, 320000],
-    period: "/ мес",
-  },
-  {
-    type: "Транзит",
-    locations: ["1 борт", "5 бортов", "Парк 10+ бортов"],
-    prices: [8000, 35000, 60000],
-    period: "/ мес",
-  },
+  { name: "Изготовление баннеров", price: 1300, unit: "м²" },
+  { name: "Изготовление информационного стенда", price: 2000, unit: "шт." },
+  { name: "Изготовление вывески", price: 3000, unit: "шт." },
+  { name: "Изготовление объёмных букв", price: 120, unit: "см высоты" },
+  { name: "Изготовление плоских букв", price: 60, unit: "см высоты" },
+  { name: "Изготовление табличек", price: 600, unit: "шт." },
+  { name: "Изготовление штендеров", price: 7500, unit: "шт." },
+  { name: "Оклейка витрин", price: 2000, unit: "м²" },
+  { name: "Монтаж наружной рекламы", price: 1500, unit: "шт." },
 ];
 
 const STATS = [
@@ -635,10 +614,7 @@ export default function Index() {
               <thead>
                 <tr style={{ background: "rgba(255,229,0,0.05)", borderBottom: "1px solid #222" }}>
                   <th className="text-left px-6 py-5 text-sm" style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)", letterSpacing: "0.1em" }}>
-                    ТИП КОНСТРУКЦИИ
-                  </th>
-                  <th className="text-left px-6 py-5 text-sm" style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)", letterSpacing: "0.1em" }}>
-                    ВАРИАНТ
+                    УСЛУГА
                   </th>
                   <th className="text-right px-6 py-5 text-sm" style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)", letterSpacing: "0.1em" }}>
                     ЦЕНА
@@ -646,37 +622,33 @@ export default function Index() {
                 </tr>
               </thead>
               <tbody>
-                {PRICE_TABLE.map((row, ri) =>
-                  row.locations.map((loc, li) => (
-                    <tr
-                      key={`${ri}-${li}`}
-                      className="transition-colors duration-200"
-                      style={{ borderBottom: "1px solid #181818" }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,229,0,0.04)"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-                    >
-                      <td className="px-6 py-4">
-                        {li === 0 ? (
-                          <span className="font-semibold" style={{ fontFamily: "Oswald, sans-serif", color: "white", fontSize: "1rem" }}>
-                            {row.type}
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className="px-6 py-4 text-sm" style={{ color: "#888" }}>{loc}</td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="font-bold text-lg" style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)" }}>
-                          {row.prices[li].toLocaleString("ru-RU")} ₽
-                        </span>
-                        <span className="text-xs ml-1" style={{ color: "#555" }}>{row.period}</span>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                {PRICE_TABLE.map((row, i) => (
+                  <tr
+                    key={i}
+                    className="transition-colors duration-200"
+                    style={{ borderBottom: "1px solid #181818" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,229,0,0.04)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                  >
+                    <td className="px-6 py-4">
+                      <span style={{ fontFamily: "Rubik, sans-serif", color: "#ccc", fontSize: "0.95rem" }}>
+                        {row.name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                      <span className="text-xs mr-1" style={{ color: "#555" }}>от</span>
+                      <span className="font-bold text-lg" style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)" }}>
+                        {row.price.toLocaleString("ru-RU")} ₽
+                      </span>
+                      <span className="text-xs ml-1" style={{ color: "#555" }}>/ {row.unit}</span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
           <p className="text-center mt-6 text-sm" style={{ color: "#555" }}>
-            * Цены указаны без НДС. Возможны скидки при долгосрочном сотрудничестве.
+            * Окончательная стоимость зависит от размера, материала и сложности изделия.
           </p>
         </div>
       </section>
