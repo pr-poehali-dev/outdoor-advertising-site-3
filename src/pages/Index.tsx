@@ -69,33 +69,77 @@ const TICKER_ITEMS = [
   "ОБЪЁМНЫЕ БУКВЫ", "ПЛОСКИЕ БУКВЫ", "БАННЕР", "СВЕТОВЫЕ КОРОБА", "ШТЕНДЕР", "АДРЕСНЫЕ ТАБЛИЧКИ", "ГИБКИЙ НЕОН", "ДИЗАЙН", "3D-ПЕЧАТЬ",
 ];
 
-const CALC_OPTIONS = {
-  type: [
-    { label: "Объёмные буквы", base: 8000 },
-    { label: "Плоские буквы", base: 3500 },
-    { label: "Баннер", base: 1200 },
-    { label: "Световой короб", base: 15000 },
-    { label: "Штендер", base: 5000 },
-    { label: "Адресная табличка", base: 2500 },
-    { label: "Гибкий неон", base: 12000 },
-    { label: "Услуги дизайнера", base: 3000 },
-    { label: "3D-печать", base: 4000 },
+const CALC_PRODUCTS = [
+  { label: "Объёмные буквы", pricePerM2: 12000 },
+  { label: "Плоские буквы", pricePerM2: 5000 },
+  { label: "Баннер", pricePerM2: 800 },
+  { label: "Световой короб", pricePerM2: 18000 },
+  { label: "Штендер", pricePerM2: 5000 },
+  { label: "Адресная табличка", pricePerM2: 6000 },
+  { label: "Гибкий неон", pricePerM2: 14000 },
+  { label: "3D-печать", pricePerM2: 9000 },
+];
+
+const CALC_MATERIALS: Record<string, { label: string; mult: number }[]> = {
+  "Объёмные буквы": [
+    { label: "Акрил", mult: 1.0 },
+    { label: "Пластик ABS", mult: 0.8 },
+    { label: "Нержавейка", mult: 1.6 },
+    { label: "Алюминий", mult: 1.4 },
   ],
-  location: [
-    { label: "Центр города", mult: 1.8 },
-    { label: "Спальный район", mult: 1.0 },
-    { label: "Торговая зона", mult: 1.4 },
-    { label: "Трасса", mult: 0.8 },
+  "Плоские буквы": [
+    { label: "Акрил", mult: 1.0 },
+    { label: "Пластик ABS", mult: 0.75 },
+    { label: "Нержавейка", mult: 1.5 },
+    { label: "Дерево", mult: 0.9 },
+  ],
+  "Баннер": [
+    { label: "Банерная ткань", mult: 1.0 },
+    { label: "Сетка (wind)", mult: 0.9 },
+    { label: "Плёнка (глянец)", mult: 1.2 },
+  ],
+  "Световой короб": [
+    { label: "Акрил + LED", mult: 1.0 },
+    { label: "Молочный акрил", mult: 1.1 },
+    { label: "Металл + LED", mult: 1.4 },
+  ],
+  "Штендер": [
+    { label: "Металл", mult: 1.0 },
+    { label: "Алюминий", mult: 1.2 },
+  ],
+  "Адресная табличка": [
+    { label: "Акрил", mult: 1.0 },
+    { label: "Нержавейка", mult: 1.5 },
+    { label: "Пластик", mult: 0.7 },
+  ],
+  "Гибкий неон": [
+    { label: "LED-неон 12мм", mult: 1.0 },
+    { label: "LED-неон 20мм", mult: 1.3 },
+  ],
+  "3D-печать": [
+    { label: "PLA-пластик", mult: 1.0 },
+    { label: "ABS-пластик", mult: 1.1 },
+    { label: "Фотополимер", mult: 1.8 },
   ],
 };
+
+const CALC_EXTRAS = [
+  { label: "Монтаж", price: 3500 },
+  { label: "Доставка", price: 1500 },
+  { label: "Услуги дизайнера", price: 3000 },
+  { label: "Покрытие UV-лак", price: 2000 },
+  { label: "Подсветка LED", price: 4000 },
+];
 
 export default function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [calcType, setCalcType] = useState(0);
-  const [calcLocation, setCalcLocation] = useState(0);
-  const [calcMonths, setCalcMonths] = useState(1);
+  const [calcProduct, setCalcProduct] = useState(0);
+  const [calcMaterial, setCalcMaterial] = useState(0);
+  const [calcWidth, setCalcWidth] = useState(100);
+  const [calcHeight, setCalcHeight] = useState(50);
   const [calcQty, setCalcQty] = useState(1);
+  const [calcExtras, setCalcExtras] = useState<number[]>([]);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -122,11 +166,24 @@ export default function Index() {
     return () => observerRef.current?.disconnect();
   }, []);
 
-  const calcPrice =
-    CALC_OPTIONS.type[calcType].base *
-    CALC_OPTIONS.location[calcLocation].mult *
-    calcMonths *
-    calcQty;
+  const currentProduct = CALC_PRODUCTS[calcProduct];
+  const materials = CALC_MATERIALS[currentProduct.label] ?? [];
+  const material = materials[calcMaterial] ?? { mult: 1.0 };
+  const areaM2 = (calcWidth / 100) * (calcHeight / 100);
+  const basePrice = currentProduct.pricePerM2 * areaM2 * material.mult * calcQty;
+  const extrasPrice = calcExtras.reduce((sum, i) => sum + CALC_EXTRAS[i].price, 0);
+  const calcPrice = basePrice + extrasPrice;
+
+  const toggleExtra = (i: number) => {
+    setCalcExtras((prev) =>
+      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
+    );
+  };
+
+  const handleProductChange = (i: number) => {
+    setCalcProduct(i);
+    setCalcMaterial(0);
+  };
 
   const formatPrice = (n: number) =>
     Math.round(n).toLocaleString("ru-RU") + " ₽";
@@ -357,22 +414,24 @@ export default function Index() {
           <div className="rounded-2xl p-8 md:p-12" style={{ background: "#0D0D0D", border: "1px solid #222" }}>
             <div className="grid md:grid-cols-2 gap-10">
               <div className="space-y-8">
+
+                {/* Продукт */}
                 <div>
                   <label className="block text-xs tracking-widest mb-4" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>
-                    ТИП КОНСТРУКЦИИ
+                    ТИП ИЗДЕЛИЯ
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {CALC_OPTIONS.type.map((opt, i) => (
+                    {CALC_PRODUCTS.map((opt, i) => (
                       <button
                         key={i}
-                        onClick={() => setCalcType(i)}
-                        className="px-4 py-2 rounded text-sm transition-all duration-200"
+                        onClick={() => handleProductChange(i)}
+                        className="px-3 py-1.5 rounded text-sm transition-all duration-200"
                         style={{
                           fontFamily: "Rubik, sans-serif",
-                          background: calcType === i ? "var(--neon-yellow)" : "transparent",
-                          color: calcType === i ? "#0A0A0A" : "#666",
-                          border: calcType === i ? "1px solid var(--neon-yellow)" : "1px solid #333",
-                          fontWeight: calcType === i ? 600 : 400,
+                          background: calcProduct === i ? "var(--neon-yellow)" : "transparent",
+                          color: calcProduct === i ? "#0A0A0A" : "#666",
+                          border: calcProduct === i ? "1px solid var(--neon-yellow)" : "1px solid #333",
+                          fontWeight: calcProduct === i ? 600 : 400,
                         }}
                       >
                         {opt.label}
@@ -381,86 +440,185 @@ export default function Index() {
                   </div>
                 </div>
 
+                {/* Материал */}
+                {materials.length > 0 && (
+                  <div>
+                    <label className="block text-xs tracking-widest mb-4" style={{ color: "var(--neon-blue)", fontFamily: "Oswald, sans-serif" }}>
+                      МАТЕРИАЛ
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {materials.map((mat, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setCalcMaterial(i)}
+                          className="px-3 py-1.5 rounded text-sm transition-all duration-200"
+                          style={{
+                            fontFamily: "Rubik, sans-serif",
+                            background: calcMaterial === i ? "var(--neon-blue)" : "transparent",
+                            color: calcMaterial === i ? "#0A0A0A" : "#666",
+                            border: calcMaterial === i ? "1px solid var(--neon-blue)" : "1px solid #333",
+                            fontWeight: calcMaterial === i ? 600 : 400,
+                          }}
+                        >
+                          {mat.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Размеры */}
                 <div>
-                  <label className="block text-xs tracking-widest mb-4" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>
-                    РАСПОЛОЖЕНИЕ
+                  <label className="block text-xs tracking-widest mb-5" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>
+                    РАЗМЕР
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {CALC_OPTIONS.location.map((opt, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setCalcLocation(i)}
-                        className="px-4 py-2 rounded text-sm transition-all duration-200"
-                        style={{
-                          fontFamily: "Rubik, sans-serif",
-                          background: calcLocation === i ? "var(--neon-pink)" : "transparent",
-                          color: calcLocation === i ? "white" : "#666",
-                          border: calcLocation === i ? "1px solid var(--neon-pink)" : "1px solid #333",
-                          fontWeight: calcLocation === i ? 600 : 400,
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                  <div className="space-y-5">
+                    <div>
+                      <div className="flex justify-between text-xs mb-2" style={{ color: "#888" }}>
+                        <span>Ширина</span>
+                        <span style={{ color: "white", fontWeight: 600 }}>{calcWidth} см</span>
+                      </div>
+                      <input type="range" min={10} max={500} step={5} value={calcWidth} onChange={(e) => setCalcWidth(+e.target.value)} className="range-neon w-full" />
+                      <div className="flex justify-between text-xs mt-1" style={{ color: "#444" }}>
+                        <span>10 см</span><span>500 см</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-xs mb-2" style={{ color: "#888" }}>
+                        <span>Высота</span>
+                        <span style={{ color: "white", fontWeight: 600 }}>{calcHeight} см</span>
+                      </div>
+                      <input type="range" min={10} max={300} step={5} value={calcHeight} onChange={(e) => setCalcHeight(+e.target.value)} className="range-neon w-full" />
+                      <div className="flex justify-between text-xs mt-1" style={{ color: "#444" }}>
+                        <span>10 см</span><span>300 см</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="mt-3 text-xs px-3 py-2 rounded inline-flex items-center gap-2"
+                    style={{ background: "rgba(255,229,0,0.05)", border: "1px solid rgba(255,229,0,0.15)", color: "#888" }}
+                  >
+                    <span style={{ color: "var(--neon-yellow)" }}>⬛</span>
+                    Площадь: <strong style={{ color: "white" }}>{((calcWidth / 100) * (calcHeight / 100)).toFixed(2)} м²</strong>
                   </div>
                 </div>
 
+                {/* Количество */}
                 <div>
-                  <label className="block text-xs tracking-widest mb-4" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>
-                    СРОК: {calcMonths} МЕС.
-                  </label>
-                  <input type="range" min={1} max={12} value={calcMonths} onChange={(e) => setCalcMonths(+e.target.value)} className="range-neon w-full" />
-                  <div className="flex justify-between text-xs mt-2" style={{ color: "#555" }}>
-                    <span>1 мес</span><span>6 мес</span><span>12 мес</span>
+                  <div className="flex justify-between text-xs mb-2" style={{ color: "#888" }}>
+                    <span className="tracking-widest" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif", fontSize: "0.7rem" }}>КОЛИЧЕСТВО</span>
+                    <span style={{ color: "white", fontWeight: 600 }}>{calcQty} шт.</span>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs tracking-widest mb-4" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>
-                    КОЛИЧЕСТВО: {calcQty} шт.
-                  </label>
                   <input type="range" min={1} max={20} value={calcQty} onChange={(e) => setCalcQty(+e.target.value)} className="range-neon w-full" />
-                  <div className="flex justify-between text-xs mt-2" style={{ color: "#555" }}>
-                    <span>1</span><span>10</span><span>20</span>
+                  <div className="flex justify-between text-xs mt-1" style={{ color: "#444" }}>
+                    <span>1 шт.</span><span>20 шт.</span>
+                  </div>
+                </div>
+
+                {/* Доп. услуги */}
+                <div>
+                  <label className="block text-xs tracking-widest mb-4" style={{ color: "var(--neon-pink)", fontFamily: "Oswald, sans-serif" }}>
+                    ДОПОЛНИТЕЛЬНО
+                  </label>
+                  <div className="space-y-2">
+                    {CALC_EXTRAS.map((extra, i) => (
+                      <button
+                        key={i}
+                        onClick={() => toggleExtra(i)}
+                        className="w-full flex items-center justify-between px-4 py-3 rounded transition-all duration-200"
+                        style={{
+                          background: calcExtras.includes(i) ? "rgba(255,45,155,0.1)" : "transparent",
+                          border: calcExtras.includes(i) ? "1px solid rgba(255,45,155,0.4)" : "1px solid #2a2a2a",
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                            style={{
+                              background: calcExtras.includes(i) ? "var(--neon-pink)" : "transparent",
+                              border: calcExtras.includes(i) ? "none" : "1px solid #444",
+                            }}
+                          >
+                            {calcExtras.includes(i) && <span style={{ color: "white", fontSize: "0.6rem" }}>✓</span>}
+                          </div>
+                          <span className="text-sm" style={{ color: calcExtras.includes(i) ? "white" : "#777" }}>
+                            {extra.label}
+                          </span>
+                        </div>
+                        <span className="text-sm font-semibold" style={{ color: calcExtras.includes(i) ? "var(--neon-pink)" : "#555", fontFamily: "Oswald, sans-serif" }}>
+                          +{extra.price.toLocaleString("ru-RU")} ₽
+                        </span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center text-center">
+              {/* Результат */}
+              <div className="flex flex-col gap-4">
                 <div
-                  className="rounded-2xl p-10 w-full"
+                  className="rounded-2xl p-8 text-center"
                   style={{
                     background: "linear-gradient(135deg, #111 0%, #1a1a00 100%)",
                     border: "1px solid rgba(255,229,0,0.3)",
-                    boxShadow: "0 0 40px rgba(255,229,0,0.1)",
+                    boxShadow: "0 0 40px rgba(255,229,0,0.08)",
                   }}
                 >
-                  <p className="text-xs tracking-widest mb-4" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>ИТОГОВАЯ СТОИМОСТЬ</p>
-                  <div className="text-4xl md:text-5xl font-bold mb-2" style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)" }}>
+                  <p className="text-xs tracking-widest mb-3" style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>ИТОГОВАЯ СТОИМОСТЬ</p>
+                  <div
+                    className="text-5xl font-bold mb-1 transition-all duration-300"
+                    style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)" }}
+                  >
                     {formatPrice(calcPrice)}
                   </div>
-                  <p className="text-xs mb-8" style={{ color: "#555" }}>
-                    {CALC_OPTIONS.type[calcType].label} · {CALC_OPTIONS.location[calcLocation].label}
-                    <br />{calcQty} шт. × {calcMonths} мес.
-                  </p>
-                  {calcMonths >= 3 && (
-                    <div
-                      className="text-xs px-3 py-2 rounded mb-6"
-                      style={{
-                        background: "rgba(255,45,155,0.1)",
-                        border: "1px solid rgba(255,45,155,0.3)",
-                        color: "var(--neon-pink)",
-                        fontFamily: "Oswald, sans-serif",
-                        letterSpacing: "0.05em",
-                      }}
-                    >
-                      🎯 СКИДКА 10% ПРИ ЗАКАЗЕ ОТ 3 МЕС
-                    </div>
-                  )}
-                  <a href="#contacts" className="neon-btn block w-full py-4 rounded text-base">
-                    Получить точный расчёт
-                  </a>
+                  <p className="text-xs mb-1" style={{ color: "#555" }}>примерный расчёт</p>
                 </div>
+
+                {/* Разбивка */}
+                <div className="rounded-xl p-6 space-y-3" style={{ background: "#111", border: "1px solid #1e1e1e" }}>
+                  <p className="text-xs tracking-widest mb-3" style={{ color: "#555", fontFamily: "Oswald, sans-serif" }}>СОСТАВ СУММЫ</p>
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: "#777" }}>{currentProduct.label}</span>
+                    <span style={{ color: "#ccc" }}>{formatPrice(basePrice)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs" style={{ color: "#555" }}>
+                    <span>{(calcWidth / 100).toFixed(2)} × {(calcHeight / 100).toFixed(2)} м · {material.label} · {calcQty} шт.</span>
+                  </div>
+                  {calcExtras.length > 0 && (
+                    <>
+                      <div className="border-t pt-3 mt-2" style={{ borderColor: "#222" }} />
+                      {calcExtras.map((i) => (
+                        <div key={i} className="flex justify-between text-sm">
+                          <span style={{ color: "#777" }}>{CALC_EXTRAS[i].label}</span>
+                          <span style={{ color: "var(--neon-pink)" }}>+{CALC_EXTRAS[i].price.toLocaleString("ru-RU")} ₽</span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  <div className="border-t pt-3 mt-1 flex justify-between font-bold" style={{ borderColor: "#333" }}>
+                    <span style={{ color: "#aaa" }}>Итого</span>
+                    <span style={{ color: "var(--neon-yellow)", fontFamily: "Oswald, sans-serif" }}>{formatPrice(calcPrice)}</span>
+                  </div>
+                </div>
+
+                {calcQty >= 5 && (
+                  <div
+                    className="text-xs px-4 py-3 rounded text-center"
+                    style={{
+                      background: "rgba(255,45,155,0.08)",
+                      border: "1px solid rgba(255,45,155,0.25)",
+                      color: "var(--neon-pink)",
+                      fontFamily: "Oswald, sans-serif",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    🎯 СКИДКА 10% ПРИ ЗАКАЗЕ ОТ 5 ШТ.
+                  </div>
+                )}
+
+                <a href="#contacts" className="neon-btn block w-full py-4 rounded text-base text-center">
+                  Получить точный расчёт
+                </a>
               </div>
             </div>
           </div>
