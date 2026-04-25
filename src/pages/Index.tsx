@@ -37,9 +37,9 @@ const PRICE_TABLE = [
 ];
 
 const STATS = [
-  { value: "250+", label: "конструкций в городе" },
-  { value: "7 лет", label: "на рынке" },
-  { value: "1500+", label: "довольных клиентов" },
+  { value: "200+", label: "вывесок в городе" },
+  { value: "10 лет", label: "на рынке" },
+  { value: "500+", label: "довольных клиентов" },
   { value: "×3", label: "рост охвата за год" },
 ];
 
@@ -312,7 +312,7 @@ export default function Index() {
 
             <p className="text-xl md:text-2xl mb-10 max-w-2xl" style={{ color: "#999", lineHeight: 1.6 }}>
               Наружная реклама, которую невозможно не заметить. <br />
-              Билборды, ситилайты, цифровые экраны — весь город работает на тебя.
+              Объёмные буквы, неоновая вывеска, штендеры — весь город работает на тебя.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -691,10 +691,13 @@ export default function Index() {
               <p className="text-sm tracking-widest mb-4" style={{ color: "var(--neon-blue)", fontFamily: "Oswald, sans-serif" }}>КТО МЫ</p>
               <h2 className="section-title text-5xl mb-8">О <span className="gradient-text">НАС</span></h2>
               <p className="text-lg mb-6" style={{ color: "#888", lineHeight: 1.8 }}>
-                Вас приветствует команда <span style={{ color: "var(--neon-yellow)" }}>Визуал ПРО!</span> Мы готовы гарантировать: лояльные цены, индивидуальный подход, высокое качество и соблюдение сроков.
+                Добро пожаловать в рекламно-производственную компанию <span style={{ color: "var(--neon-yellow)" }}>«Визуал ПРО»!</span> Мы рады приветствовать вас в нашем творческом мире, где каждая идея превращается в яркую реальность.
+              </p>
+              <p className="text-lg mb-6" style={{ color: "#888", lineHeight: 1.8 }}>
+                Мы предлагаем комплексные решения в области наружной рекламы — от разработки концепции до установки готовых изделий. Наша команда профессионалов гарантирует высокое качество работ и строгое соблюдение сроков изготовления, учитывая все ваши пожелания.
               </p>
               <p className="text-lg mb-10" style={{ color: "#888", lineHeight: 1.8 }}>
-                Если Вам нужна <span style={{ color: "var(--neon-yellow)" }}>яркая</span> наружная реклама — мы будем рады видеть Вас в числе наших клиентов! Лучшие материалы, качественная сборка, эксклюзивный дизайн.
+                С <span style={{ color: "var(--neon-yellow)" }}>«Визуал ПРО»</span> ваша реклама не останется незамеченной! Давайте вместе создадим что-то удивительное!
               </p>
               <div className="flex flex-wrap gap-4">
                 {["Лояльные цены", "Индивидуальный подход", "Высокое качество", "Соблюдение сроков"].map((tag, i) => (
