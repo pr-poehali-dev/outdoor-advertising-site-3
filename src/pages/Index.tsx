@@ -796,11 +796,9 @@ export default function Index() {
           <span style={{ fontFamily: "Oswald, sans-serif", color: "var(--neon-yellow)", fontSize: "1.1rem" }}>Визуал ПРО</span>
           <span>© 2024 Рекламное агентство Визуал ПРО. Все права защищены.</span>
           <div className="flex gap-6">
-            {["ВКонтакте", "Telegram", "WhatsApp"].map((s) => (
-              <a key={s} href="#contacts" className="text-xs transition-colors duration-200 hover:text-white" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "0.08em" }}>
-                {s}
-              </a>
-            ))}
+            <a href="https://t.me/vizualPRO_39" target="_blank" rel="noopener noreferrer" className="text-xs transition-colors duration-200 hover:text-white" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "0.08em" }}>
+              Telegram
+            </a>
           </div>
         </div>
       </footer>
