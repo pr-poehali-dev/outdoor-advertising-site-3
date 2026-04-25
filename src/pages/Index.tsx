@@ -56,7 +56,7 @@ const CALC_PRODUCTS = [
   { label: "Штендер", pricePerM2: 5000 },
   { label: "Адресная табличка", pricePerM2: 6000 },
   { label: "Гибкий неон", pricePerM2: 14000 },
-  { label: "3D-печать", pricePerM2: 9000 },
+  { label: "3D-печать", pricePerM2: 5000 },
 ];
 
 const CALC_MATERIALS: Record<string, { label: string; mult: number }[]> = {
@@ -95,8 +95,9 @@ const CALC_MATERIALS: Record<string, { label: string; mult: number }[]> = {
   ],
   "3D-печать": [
     { label: "PLA-пластик", mult: 1.0 },
-    { label: "ABS-пластик", mult: 1.1 },
-    { label: "Печать по фото", mult: 1.5 },
+    { label: "ABS-пластик", mult: 1.2 },
+    { label: "PETG-пластик", mult: 1.1 },
+    { label: "Печать по фото", mult: 2.0 },
   ],
 };
 
